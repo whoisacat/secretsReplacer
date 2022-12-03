@@ -65,7 +65,8 @@ public class RequestResponseLoggingInterceptorJava implements ClientHttpRequestI
         for (String field : sensitiveBodyFields) {
             String value = findFieldValueByRegex(bodyString, field);
             if (value != null) {
-                bodyString = bodyString.replace(value, "*****");
+                String regex = "\"" +field + "\":\s*" + "\"" + value + "\"";
+                bodyString = bodyString.replaceAll(regex, "\"" + field + "\":" + "\"*****\"");
             }
             //todo для объектов и массивов (можно использовать replaceAll с regex), если понадобится
         }

@@ -12,6 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
 
+        //todo вынести в тесты и сделать стартер
         LoginForm loginForm = new LoginForm("username", "password");
         HttpEntity<LoginForm> requestEntity = new HttpEntity<>(loginForm);
         restTemplate().postForEntity("http://httpbin.org/post", requestEntity, String.class);
