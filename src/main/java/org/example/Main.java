@@ -24,7 +24,7 @@ public class Main {
         if (interceptors.isEmpty()) {
             interceptors = new ArrayList<>();
         }
-        interceptors.add(new RequestResponseLoggingInterceptorJava());
+        interceptors.add(new RequestResponseLoggingInterceptor(new SensitiveReplacer()));
         restTemplate.setInterceptors(interceptors);
         return restTemplate;
     }
