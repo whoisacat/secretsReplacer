@@ -1,9 +1,16 @@
 package org.example;
 
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class Main {
 
@@ -13,6 +20,17 @@ public class Main {
     public static void main(String[] args) {
 
         //todo вынести в тесты и сделать стартер
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> body= new LinkedMultiValueMap<>();
+        body.add("email", "first.last@example.com");
+        body.add("text", "go fuck yourself");
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
+
+        ResponseEntity<String> response = restTemplate().postForEntity( "http://example.org", request , String.class );
+
         LoginForm loginForm = new LoginForm("username", "password");
         HttpEntity<LoginForm> requestEntity = new HttpEntity<>(loginForm);
         restTemplate().postForEntity("http://httpbin.org/post", requestEntity, String.class);
@@ -24,7 +42,8 @@ public class Main {
         if (interceptors.isEmpty()) {
             interceptors = new ArrayList<>();
         }
-        interceptors.add(new RequestResponseLoggingInterceptor(new SensitiveReplacer()));
+        interceptors.add(new RequestResponseLoggingInterceptor(Arrays
+                .asList(new ApplicationJsonSensitiveReplacer(), new XWwwFormUrlencodedSensitiveReplacer())));
         restTemplate.setInterceptors(interceptors);
         return restTemplate;
     }
