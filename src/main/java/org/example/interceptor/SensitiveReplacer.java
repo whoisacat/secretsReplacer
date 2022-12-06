@@ -1,4 +1,4 @@
-package org.example;
+package org.example.interceptor;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -6,7 +6,7 @@ import org.springframework.http.client.ClientHttpResponse;
 
 import java.util.*;
 
-interface SensitiveReplacer {
+public interface SensitiveReplacer {
 
     String PLACEHOLDER = "*****";
     List<String> sensitiveHeaderFields = Arrays.asList("Server", "Connection");

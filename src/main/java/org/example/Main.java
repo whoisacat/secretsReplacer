@@ -1,16 +1,21 @@
 package org.example;
 
+import org.example.interceptor.ApplicationJsonSensitiveReplacer;
+import org.example.interceptor.RequestResponseLoggingInterceptor;
+import org.example.interceptor.XWwwFormUrlencodedSensitiveReplacer;
+import org.example.model.LoginForm;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 public class Main {
 
@@ -19,25 +24,22 @@ public class Main {
 
     public static void main(String[] args) {
 
-        //todo вынести в тесты и сделать стартер
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> body= new LinkedMultiValueMap<>();
-        body.add("email", "first.last@example.com");
-        body.add("text", "go fuck yourself");
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
-
-        ResponseEntity<String> response = restTemplate().postForEntity( "http://example.org", request , String.class );
-
         LoginForm loginForm = new LoginForm("username", "password");
         HttpEntity<LoginForm> requestEntity = new HttpEntity<>(loginForm);
         restTemplate().postForEntity("http://httpbin.org/post", requestEntity, String.class);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        MultiValueMap<String, String> body= new LinkedMultiValueMap<>();
+        body.add("email", "first.last@example.com");
+        body.add("text", "go fuck yourself");
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
+        restTemplate().postForEntity( "http://example.org", request , String.class );
     }
 
     private static RestTemplate restTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
+        ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory());
+        RestTemplate restTemplate = new RestTemplate(factory);
         var interceptors = restTemplate.getInterceptors();
         if (interceptors.isEmpty()) {
             interceptors = new ArrayList<>();

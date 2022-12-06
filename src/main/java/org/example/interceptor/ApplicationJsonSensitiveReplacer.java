@@ -1,4 +1,4 @@
-package org.example;
+package org.example.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;

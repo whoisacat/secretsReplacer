@@ -1,4 +1,4 @@
-package org.example;
+package org.example.interceptor;
 
 import org.springframework.http.MediaType;
 import java.util.*;
