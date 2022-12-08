@@ -4,8 +4,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import java.io.IOException;
 import java.util.*;
+
 public class ApplicationJsonSensitiveReplacer implements SensitiveReplacer {
-    private static String JSON_FIELD_SPLITTER_REGEX = "\\.";
+
+    private final List<String> sensitiveBodyFields;
+    private final List<String> sensitiveHeaderFields;
+
+    @Override
+    public List<String> getSensitiveHeaderFields() {
+        return sensitiveHeaderFields;
+    }
+
+    public ApplicationJsonSensitiveReplacer(List<String> sensitiveHeaderFields,
+                                            List<String> sensitiveBodyFields) {
+        this.sensitiveBodyFields = sensitiveBodyFields;
+        this.sensitiveHeaderFields = sensitiveHeaderFields;
+    }
+
+    private static final String JSON_FIELD_SPLITTER_REGEX = "\\.";
     @Override
     public String replaceSensitive(String body, MediaType mediaType) {
         if (!mediaType.toString().contains(MediaType.APPLICATION_JSON_VALUE)) {

@@ -23,6 +23,8 @@ public class Main {
 
     private final static String body = "{  \"args\": {},   \"data\": \"{\\\"password\\\":\\\"password\\\",\\\"username\\\":\\\"username\\\"}\",   \"files\": {},   \"form\": {},   \"headers\": {    \"Accept\": \"text/plain, application/json, application/*+json, */*\",     \"Content-Length\": \"45\",     \"Content-Type\": \"application/json\",     \"Host\": \"httpbin.org\",     \"User-Agent\": \"Java/17.0.2\",     \"X-Amzn-Trace-Id\": \"Root=1-6389d11c-17adce885257561b55579a75\"  },   \"json\": {    \"password\": \"password\",     \"username\": \"username\"  },   \"origin\": \"5.189.26.9\",   \"url\": \"http://httpbin.org/post\"}";
     private final static String littleBody = "{\"fileFetchUrl\":null,\"status\":\"success\"}";
+    private static final List<String> sensitiveHeaderFields = Arrays.asList("Server", "Connection");
+    private static final List<String>  sensitiveBodyFields = Arrays.asList("password", "email", "headers", "data.password", "data", "json.password", "json.username");
 
     public static void main(String[] args) {
 
@@ -34,7 +36,7 @@ public class Main {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> body= new LinkedMultiValueMap<>();
         body.add("email", "first.last@example.com");
-        body.add("text", "Что-то поприличнее");
+        body.add("text", "chto-to poprilichneye");
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
         restTemplate().postForEntity( "http://example.org", request , String.class );
     }
@@ -47,7 +49,8 @@ public class Main {
             interceptors = new ArrayList<>();
         }
         interceptors.add(new RequestResponseLoggingInterceptor(Arrays
-                .asList(new ApplicationJsonSensitiveReplacer(), new XWwwFormUrlencodedSensitiveReplacer())));
+                .asList(new ApplicationJsonSensitiveReplacer(sensitiveBodyFields, sensitiveHeaderFields),
+                        new XWwwFormUrlencodedSensitiveReplacer(sensitiveBodyFields, sensitiveHeaderFields))));
         restTemplate.setInterceptors(interceptors);
         return restTemplate;
     }

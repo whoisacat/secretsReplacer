@@ -42,7 +42,11 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
             log.debug("URI         : {}", request.getURI());
             log.debug("Method      : {}", request.getMethod());
             log.debug("Headers     : {}", request.getHeaders());
+            AtomicReference<HttpHeaders> h = new AtomicReference<>(request.getHeaders());
+            replacers.stream().findAny().ifPresent(it -> h.set(it.replaceFromHeaders(request.getHeaders())));
+            log.debug("Headers     : {}", h);
             String bodyString = new String(body, "UTF-8");
+            log.debug("Request body: {}", bodyString);
             for (SensitiveReplacer r : replacers) {
                 bodyString = r.replaceSensitive(bodyString, request.getHeaders().getContentType());
             }
@@ -58,10 +62,12 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
             log.debug("============================response begin==========================================");
             log.debug("Status code  : {}", response.getStatusCode());
             log.debug("Status text  : {}", response.getStatusText());
+            log.debug("Headers      : {}", response.getHeaders());
             AtomicReference<HttpHeaders> h = new AtomicReference<>(response.getHeaders());
-            replacers.stream().findAny().ifPresent(it -> h.set(it.replaceFromHeaders(response)));
+            replacers.stream().findAny().ifPresent(it -> h.set(it.replaceFromHeaders(response.getHeaders())));
             log.debug("Headers      : {}", h.get());
             String bodyString = StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
+            log.debug("Responce body: {}", bodyString.replace("\n", ""));
             for (SensitiveReplacer r : replacers) {
                 bodyString = r.replaceSensitive(bodyString, response.getHeaders().getContentType());
             }
