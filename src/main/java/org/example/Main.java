@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -16,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Main {
 
@@ -32,7 +34,7 @@ public class Main {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> body= new LinkedMultiValueMap<>();
         body.add("email", "first.last@example.com");
-        body.add("text", "go fuck yourself");
+        body.add("text", "Что-то поприличнее");
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
         restTemplate().postForEntity( "http://example.org", request , String.class );
     }
@@ -40,7 +42,7 @@ public class Main {
     private static RestTemplate restTemplate() {
         ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory());
         RestTemplate restTemplate = new RestTemplate(factory);
-        var interceptors = restTemplate.getInterceptors();
+        List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
         if (interceptors.isEmpty()) {
             interceptors = new ArrayList<>();
         }
