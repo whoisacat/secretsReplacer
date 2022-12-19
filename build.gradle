@@ -15,7 +15,6 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web:2.7.5') {
         exclude group: 'org.yaml', module: 'snakeyaml'
     }
-    api 'com.jayway.jsonpath:json-path:2.7.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
 }
 
